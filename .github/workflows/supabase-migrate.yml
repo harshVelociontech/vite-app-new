@@ -5,6 +5,7 @@ on:
 
 jobs:
   deploy-dev:
+    name: Deploy Dev Branch
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/dev'
     steps:
@@ -35,85 +36,87 @@ jobs:
         with:
           payload: |
             {
-              "text": ":x: Dev deployment failed! ❌"
+              "text": ":x: Dev deployment failed! "
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  deploy-staging:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'Merge branch \'dev\'')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy to Vercel (Staging)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "Deploying main branch to Staging after Dev merge..."
-          npx vercel --token $VERCEL_TOKEN --confirm --build-env NODE_ENV=staging
+  # deploy-staging:
+  #   name: Deploy Staging Branch
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'Merge branch \'dev\'')
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Deploy to Vercel (Staging)
+  #       env:
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #       run: |
+  #         echo "Deploying main branch to Staging after Dev merge..."
+  #         npx vercel --token $VERCEL_TOKEN --confirm --build-env NODE_ENV=staging
 
-      - name: Slack Notification on Success
-        if: success()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":white_check_mark: Staging deployment successful! ✅"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     - name: Slack Notification on Success
+  #       if: success()
+  #       uses: slackapi/slack-github-action@v1.24.0
+  #       with:
+  #         payload: |
+  #           {
+  #             "text": ":white_check_mark: Staging deployment successful! "
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Slack Notification on Failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":x: Staging deployment failed! ❌"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     - name: Slack Notification on Failure
+  #       if: failure()
+  #       uses: slackapi/slack-github-action@v1.24.0
+  #       with:
+  #         payload: |
+  #           {
+  #             "text": ":x: Staging deployment failed! ❌"
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  deploy-prod:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment:
-      url: https://your-production-url.com
-    steps:
-      - uses: actions/checkout@v4
-      - name: Manual Approval before Production Deploy
-        uses: hmarr/auto-approve-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Deploy to Vercel (Prod)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "Deploying main branch to Production..."
-          npx vercel --token $VERCEL_TOKEN --prod --confirm --build-env NODE_ENV=production
+  # deploy-prod:
+  #   name: Deploy Production Branch
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   environment:
+  #     url: https://your-production-url.com
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Manual Approval before Production Deploy
+  #       uses: hmarr/auto-approve-action@v2
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Deploy to Vercel (Prod)
+  #       env:
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #       run: |
+  #         echo "Deploying main branch to Production..."
+  #         npx vercel --token $VERCEL_TOKEN --prod --confirm --build-env NODE_ENV=production
 
-      - name: Slack Notification on Success
-        if: success()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":white_check_mark: Production deployment successful!"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     - name: Slack Notification on Success
+  #       if: success()
+  #       uses: slackapi/slack-github-action@v1.24.0
+  #       with:
+  #         payload: |
+  #           {
+  #             "text": ":white_check_mark: Production deployment successful!"
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Slack Notification on Failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":x: Production deployment failed! "
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #     - name: Slack Notification on Failure
+  #       if: failure()
+  #       uses: slackapi/slack-github-action@v1.24.0
+  #       with:
+  #         payload: |
+  #           {
+  #             "text": ":x: Production deployment failed! "
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
