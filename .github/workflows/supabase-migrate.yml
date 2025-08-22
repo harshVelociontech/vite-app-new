@@ -24,7 +24,7 @@ jobs:
         with:
           payload: |
             {
-              "text": ":white_check_mark: Dev deployment successful! ✅"
+              "text": ":white_check_mark: Dev deployment successful!"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
